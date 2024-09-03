@@ -1,0 +1,19 @@
+#include "../s21_decimal.h"
+
+#test s21_in_1
+    int res = s21_in('a', "bcaddsw");
+    ck_assert(res == 1);
+
+#test s21_in_2
+    int res = s21_in('z', "bcaddsw");
+    ck_assert(res == 0);
+
+#test s21_in_3
+    int res = s21_in('z', "bcadzdsw ");
+    ck_assert(res == 1);
+
+#test s21_in_4
+    int res = s21_in('j', "bcadzdsw ");
+    ck_assert(res == 0);
+
+    printf("TEST s21_in:\n");

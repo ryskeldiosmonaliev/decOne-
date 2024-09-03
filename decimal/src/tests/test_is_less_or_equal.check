@@ -1,0 +1,38 @@
+#include "../s21_decimal.h"
+
+#test s21_is_less_or_equal_1
+
+    // 79228162514264337593543950335 
+    s21_decimal one = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0}};
+    // 79228162514264337593543950335
+    s21_decimal two = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0}};
+    int res = s21_is_less_or_equal(one, two);
+    ck_assert(res == 1);
+
+#test s21_is_less_or_equal_2
+
+    // 79228162514264337593543950334 
+    s21_decimal one ={{0xFFFFFFFE, 0xFFFFFFFF, 0xFFFFFFFF, 0}};
+    // 79228162514264337593543950335
+    s21_decimal two = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0}};
+    int res = s21_is_less_or_equal(one, two);
+    ck_assert(res == 1);
+
+#test s21_is_less_or_equal_3
+    // 79228162514264337593543950335 
+    s21_decimal one ={{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0}};
+    // 79228162514264337593543950334
+    s21_decimal two = {{0xFFFFFFFE, 0xFFFFFFFF, 0xFFFFFFFF, 0}};
+    int res = s21_is_less_or_equal(one, two);
+    ck_assert(res == 0);
+
+#test s21_is_less_or_equal_4
+    // 79228162514264337593543950334 
+    s21_decimal one ={{0xFFFFFFFE, 0xFFFFFFFF, 0xFFFFFFFF, 0}};
+    // 79228162514264337593543950335
+    s21_decimal two = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0}};
+    s21_set_bit(&two, SIGN);
+    int res = s21_is_less_or_equal(one, two);
+    ck_assert(res == 0);
+
+    printf("TEST s21_is_less_or_equal:\n");

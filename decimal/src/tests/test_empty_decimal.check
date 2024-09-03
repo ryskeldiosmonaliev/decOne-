@@ -1,0 +1,8 @@
+#include "../s21_decimal.h"
+
+#test s21_empty_decimal_1
+    s21_decimal s21_d = {{0, 1, 2, 4}};
+    s21_decimal etalon = {{0, 0, 0, 0}};
+    s21_empty_decimal(&s21_d);
+    ck_assert(s21_is_equal(s21_d, etalon) == 1);
+    printf("TEST s21_empty_decimal\n");

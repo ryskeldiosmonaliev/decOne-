@@ -1,0 +1,96 @@
+#include "../s21_decimal.h"
+
+#test S21_NORMALIZE_1
+
+s21_decimal num = {
+    {0b10101010101010101010100000010000, 0b10100110101010, 0, 0x00030000}};
+s21_decimal num_to_norm = {
+    {0b10101010101010101010101010101010, 0b1010, 0, 0x00000000}};
+
+s21_normalize(&num, &num_to_norm);
+
+ck_assert_int_eq(num_to_norm.bits[0], num.bits[0]);
+ck_assert_int_eq(num_to_norm.bits[1], num.bits[1]);
+ck_assert_int_eq(num_to_norm.bits[2], num.bits[2]);
+ck_assert_int_eq(num_to_norm.bits[3], num.bits[3]);
+
+
+
+#test S21_NORMALIZE_2
+    // https://www.binaryhexconverter.com/binary-to-decimal-converter
+
+    // десятичное значение d1 1.111111111 // exponent 9
+    // десятичное значение d2 11111.11111 // exponent 5
+
+    s21_decimal d1 = {{1111111111, 0, 0, 0}};
+    s21_decimal d2 = {{1111111111, 0, 0, 0}};
+
+    s21_set_exponent(&d1, 9);
+    s21_set_exponent(&d2, 5);
+    // printf("d1 before s21_normalize\n");
+    // s21_print_decimal(&d1); 
+    // printf("d2 before s21_normalize\n");
+    // s21_print_decimal(&d2); 
+
+    int res = s21_normalize(&d1, &d2);
+    
+    // printf("d1 after s21_normalize\n");
+    // s21_print_decimal(&d1); 
+    // printf("d2 after s21_normalize\n");
+    // s21_print_decimal(&d2); 
+
+    ck_assert(s21_get_exponent(&d1) == 9 && s21_get_exponent(&d2) == 9);
+    ck_assert(0 == res);
+
+
+#test S21_NORMALIZE_3
+    // экспонента первого больше второго
+
+    // десятичное значение d1 11111.0 // exponent 0
+    // десятичное значение d2 1.1111 // exponent 4
+
+    s21_decimal d1 = {{1111111111, 0, 0, 0}};
+    s21_decimal d2 = {{1111111111, 0, 0, 0}};
+
+    s21_set_exponent(&d1, 0);
+    s21_set_exponent(&d2, 4);
+
+    int res = s21_normalize(&d1, &d2);
+    ck_assert(s21_get_exponent(&d1) == 4 && s21_get_exponent(&d2) == 4);
+    ck_assert(0 == res);
+
+
+#test S21_NORMALIZE_4
+    s21_decimal d1 = {{UINT_MAX, UINT_MAX, UINT_MAX, 0}};
+    s21_decimal d2 = {{UINT_MAX, UINT_MAX, UINT_MAX, 0}};
+    s21_set_exponent(&d1, 28);
+    s21_set_exponent(&d2, 27);
+    int res = s21_normalize(&d1, &d2);
+    ck_assert(s21_get_exponent(&d1) == 27 && s21_get_exponent(&d2) == 27);
+    ck_assert(0 == res);
+
+#test S21_NORMALIZE_5
+    s21_decimal d1 = {{UINT_MAX, UINT_MAX, 0, 0}};
+    s21_decimal d2 = {{UINT_MAX, UINT_MAX, 0, 0}};
+    s21_set_exponent(&d1, 15);
+    s21_set_exponent(&d2, 14);
+    int res = s21_normalize(&d1, &d2);
+    ck_assert(s21_get_exponent(&d1) == 15 && s21_get_exponent(&d2) == 15);
+    ck_assert(0 == res);
+
+// если при попытке домножить число на 10 чтобы привести
+// экспоненту к большей возникает переполнение - то вместо 
+// умножения используется деление
+#test S21_NORMALIZE_6
+    s21_decimal d1 = {{UINT_MAX, UINT_MAX, 0, 0}};
+    s21_decimal d2 = {{UINT_MAX, UINT_MAX, 0, 0}};
+    s21_set_exponent(&d1, 15);
+    s21_set_exponent(&d2, 14);
+    int res = s21_normalize(&d1, &d2);
+    ck_assert(s21_get_exponent(&d1) == 15 && s21_get_exponent(&d2) == 15);
+    ck_assert(0 == res);
+
+printf("TEST s21_normalize:\n");
+
+
+

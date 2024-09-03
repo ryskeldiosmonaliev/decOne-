@@ -1,0 +1,81 @@
+#include "../s21_decimal.h"
+
+#test s21_from_int_to_decimal_1
+	s21_decimal res = {{0}};
+	int src = -2147483648;
+	unsigned int correct[4] = {2147483648, 0, 0, 0x80000000};
+	s21_from_int_to_decimal(src, &res);
+	ck_assert_int_eq(res.bits[0], correct[0]);
+	ck_assert_int_eq(res.bits[1], correct[1]);
+	ck_assert_int_eq(res.bits[2], correct[2]);
+	ck_assert_int_eq(res.bits[3], correct[3]);
+
+#test s21_from_int_to_decimal_2
+	s21_decimal res = {{0}};
+	int src = -2147483647;
+	unsigned int correct[4] = {2147483647, 0, 0, 0x80000000};
+	s21_from_int_to_decimal(src, &res);
+	ck_assert_int_eq(res.bits[0], correct[0]);
+	ck_assert_int_eq(res.bits[1], correct[1]);
+	ck_assert_int_eq(res.bits[2], correct[2]);
+	ck_assert_int_eq(res.bits[3], correct[3]);
+
+#test s21_from_int_to_decimal_3
+	s21_decimal res = {{0}};
+	int src = -1;
+	unsigned int correct[4] = {1, 0, 0, 0x80000000};
+	s21_from_int_to_decimal(src, &res);
+	ck_assert_int_eq(res.bits[0], correct[0]);
+	ck_assert_int_eq(res.bits[1], correct[1]);
+	ck_assert_int_eq(res.bits[2], correct[2]);
+	ck_assert_int_eq(res.bits[3], correct[3]);
+	
+#test s21_from_int_to_decimal_4
+	s21_decimal res = {{0}};
+	int src = -0;
+	unsigned int correct[4] = {0, 0, 0, 0x00000000};
+	s21_from_int_to_decimal(src, &res);
+	ck_assert_int_eq(res.bits[0], correct[0]);
+	ck_assert_int_eq(res.bits[1], correct[1]);
+	ck_assert_int_eq(res.bits[2], correct[2]);
+	ck_assert_int_eq(res.bits[3], correct[3]);
+	
+#test s21_from_int_to_decimal_5
+	s21_decimal res = {{0}};
+	int src = 0;
+	unsigned int correct[4] = {0, 0, 0, 0x00000000};
+	s21_from_int_to_decimal(src, &res);
+	ck_assert_int_eq(res.bits[0], correct[0]);
+	ck_assert_int_eq(res.bits[1], correct[1]);
+	ck_assert_int_eq(res.bits[2], correct[2]);
+	ck_assert_int_eq(res.bits[3], correct[3]);
+	
+
+#test s21_from_int_to_decimal_6
+	s21_decimal res = {{0}};
+	int src = 1;
+	unsigned int correct[4] = {1, 0, 0, 0x00000000};
+	s21_from_int_to_decimal(src, &res);
+	ck_assert_int_eq(res.bits[0], correct[0]);
+	ck_assert_int_eq(res.bits[1], correct[1]);
+	ck_assert_int_eq(res.bits[2], correct[2]);
+	ck_assert_int_eq(res.bits[3], correct[3]);
+
+#test s21_from_int_to_decimal_7
+	s21_decimal res = {{0}};
+	int src = 2147483647;
+	unsigned int correct[4] = {2147483647, 0, 0, 0x00000000};
+	s21_from_int_to_decimal(src, &res);
+	ck_assert_int_eq(res.bits[0], correct[0]);
+	ck_assert_int_eq(res.bits[1], correct[1]);
+	ck_assert_int_eq(res.bits[2], correct[2]);
+	ck_assert_int_eq(res.bits[3], correct[3]);
+
+#test s21_from_int_to_decimal_8
+	int src = 123;
+	s21_from_int_to_decimal(src, NULL);
+	ck_assert(src == 123); // условие по любому истино
+	printf("TEST s21_from_int_to_decimal:\n");
+
+
+

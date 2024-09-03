@@ -1,0 +1,38 @@
+#include "../s21_decimal.h"
+
+#test s21_div_mantiss_1
+    s21_decimal d1 = {{9, 0, 0, 0}};
+    s21_decimal d2 = {{3, 0, 0, 0}};
+    unsigned int rem = s21_div_mantiss(&d1, &d2);
+    ck_assert(d1.bits[0] == 3);
+    ck_assert(rem == 0);
+
+
+// возвращение остатка
+#test s21_div_mantiss_2
+    s21_decimal d1 = {{11, 0, 0, 0}};
+    s21_decimal d2 = {{3, 0, 0, 0}};
+    unsigned int rem = s21_div_mantiss(&d1, &d2);
+    ck_assert(d1.bits[0] == 3);
+    ck_assert(rem == 2);
+
+// тест первого поля по индексу
+#test s21_div_mantiss_3
+    s21_decimal d1 = {{0, 1, 0, 0}};
+    s21_decimal d2 = {{5, 0, 0, 0}}; 
+    unsigned int rem = s21_div_mantiss(&d1, &d2);
+    ck_assert(d1.bits[0] == 858993459);
+    ck_assert(rem == 1);
+
+// тест второго поля
+#test s21_div_mantiss_4
+    s21_decimal d1 = {{0, 0, 1, 0}};
+    s21_decimal d2 = {{0, 1, 0, 0}}; 
+    unsigned int rem = s21_div_mantiss(&d1, &d2);
+    ck_assert(d1.bits[1] == 1);
+    ck_assert(rem == 0);
+
+
+
+
+    printf("TEST s21_div_mantiss:\n");

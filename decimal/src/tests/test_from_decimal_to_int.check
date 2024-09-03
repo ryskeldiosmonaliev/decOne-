@@ -1,0 +1,47 @@
+#include "../s21_decimal.h"
+
+#test s21_from_decimal_to_int_1
+
+    s21_decimal src = {{42, 0, 0, 0}};
+
+    int dst = 0;
+
+    int code = s21_from_decimal_to_int(src, &dst);
+
+    ck_assert(dst == 42);
+    ck_assert(code == 0);
+
+#test s21_from_decimal_to_int_2
+
+    s21_decimal src = {{42, 0, 0, 0}};
+    s21_set_bit(&src, SIGN);
+    int dst = 0;
+    int code = s21_from_decimal_to_int(src, &dst);
+    ck_assert(code == 0);
+    ck_assert(dst == -42);
+
+#test s21_from_decimal_to_int_3
+
+    s21_decimal src = {{0, 0, 0, 0}};
+    s21_set_bit(&src, SIGN);
+    int dst = 0;
+    int code = s21_from_decimal_to_int(src, &dst);
+    ck_assert(code == 0);
+    ck_assert(dst == -0);
+
+#test s21_from_decimal_to_int_4
+
+    s21_decimal src = {{0, 1, 0, 0}};
+    s21_set_bit(&src, SIGN);
+    int dst = 0;
+    int code = s21_from_decimal_to_int(src, &dst);
+    ck_assert(code == convertation_error);
+    ck_assert(dst == 0);
+
+#test s21_from_decimal_to_int_5
+    s21_decimal src = {{0, 1, 0, 0}};
+    s21_set_bit(&src, SIGN);
+    int code = s21_from_decimal_to_int(src, NULL);
+    ck_assert(code == convertation_error);
+
+    printf("TEST s21_from_decimal_to_int:\n");

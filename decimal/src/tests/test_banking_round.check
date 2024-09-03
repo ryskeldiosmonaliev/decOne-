@@ -1,0 +1,58 @@
+#include "../s21_decimal.h"
+
+#test s21_banking_round_1
+    s21_decimal value = {{1, 0, 0, 0}};
+    s21_decimal result = {{0, 0, 0, 0}};
+    s21_set_exponent(&value, 1);
+    // value = 0.1
+    int code = s21_banking_round(&value, &result);
+    ck_assert(s21_is_equal(result, (s21_decimal) {{0,0,0,0}}));
+    ck_assert (code == OK);
+
+#test s21_banking_round_2
+    s21_decimal value = {{5, 0, 0, 0}};
+    s21_decimal result = {{0, 0, 0, 0}};
+    s21_set_exponent(&value, 1);
+    // value = 0.5
+    int code = s21_banking_round(&value, &result);
+    ck_assert(s21_is_equal(result, (s21_decimal) {{0,0,0,0}}));
+    ck_assert (code == OK);
+
+#test s21_banking_round_3
+    s21_decimal value = {{15, 0, 0, 0}};
+    s21_decimal result = {{0, 0, 0, 0}};
+    s21_set_exponent(&value, 1);
+    // value = 1.5
+    int code = s21_banking_round(&value, &result);
+    ck_assert(s21_is_equal(result, (s21_decimal) {{2,0,0,0}}));
+    ck_assert (code == OK);
+
+#test s21_banking_round_4
+    s21_decimal value = {{450001, 0, 0, 0}};
+    s21_decimal result = {{0, 0, 0, 0}};
+    s21_set_exponent(&value, 5);
+    // value = 4.50001
+    int code = s21_banking_round(&value, &result);
+    ck_assert(s21_is_equal(result, (s21_decimal) {{5,0,0,0}}));
+    ck_assert (code == OK);
+
+#test s21_banking_round_5
+    s21_decimal value = {{4499999, 0, 0, 0}};
+    s21_decimal result = {{0, 0, 0, 0}};
+    s21_set_exponent(&value, 6);
+    // value = 4,499999
+    int code = s21_banking_round(&value, &result);
+    ck_assert(s21_is_equal(result, (s21_decimal) {{4,0,0,0}}));
+    ck_assert (code == OK);
+
+#test s21_banking_round_6
+    s21_decimal value = {{45, 0, 0, 0}};
+    s21_set_bit(&value, SIGN);
+    s21_decimal result = {{0, 0, 0, 0}};
+    s21_set_exponent(&value, 1);
+    // value = 4,5
+    int code = s21_banking_round(&value, &result);
+    ck_assert(s21_is_equal(result, (s21_decimal) {{4,0,0,powers_of_two[31]}}));
+    ck_assert (code == OK);
+
+    printf("TEST s21_banking_round:\n");

@@ -1,0 +1,171 @@
+#include "../s21_decimal.h"
+
+// минимальная работоспособность
+#test s21_add_1
+    s21_decimal d1 = {{1, 1, 1, 0}};
+    s21_decimal d2 = {{1, 1, 1, 0}};
+    s21_decimal result = {{0, 0, 0, 0}};
+    s21_decimal etalon = {{2, 2, 2, 0}};
+    int res = s21_add(d1, d2, &result);
+    ck_assert(res == 0);
+    ck_assert(s21_is_equal(result, etalon) == 1);
+
+// перенос бита во второе поле index 1
+#test s21_add_2
+    s21_decimal d1 = {{4294967295, 0, 0, 0}};
+    s21_decimal d2 = {{1, 0, 0, 0}};
+    s21_decimal result = {{0, 0, 0, 0}};
+    s21_decimal etalon = {{0, 1, 0, 0}};
+    int res = s21_add(d1, d2, &result);
+    ck_assert(res == 0);
+    ck_assert(s21_is_equal(result, etalon) == 1);
+    
+// перенос бита во третее поле index 2
+#test s21_add_3
+    s21_decimal d1 = {{4294967295, 4294967295, 0, 0}};
+    s21_decimal d2 = {{1, 0, 0, 0}};
+    s21_decimal result = {{0, 0, 0, 0}};
+    s21_decimal etalon = {{0, 0, 1, 0}};
+    int res = s21_add(d1, d2, &result);
+    ck_assert(res == 0);
+    ck_assert(s21_is_equal(result, etalon) == 1);
+
+// положительное переполнение decimal
+// (когда сумма мантисс выходит)
+// здесь result должен принимать значение
+// положительной бесконечности
+#test s21_add_4
+    s21_decimal d1 = {{4294967295, 4294967295, 4294967295, 0}};
+    s21_decimal d2 = {{1, 0, 0, 0}};
+    s21_decimal result = {{0, 0, 0, 0}};
+    s21_decimal etalon = {{0, 0, 0, 0}};
+    int res = s21_add(d1, d2, &result);
+    ck_assert(res == number_is_too_large);
+    ck_assert(s21_is_equal(result, etalon) == 1);
+
+// макмимальное число децимала
+#test s21_add_5
+    s21_decimal d1 = {{4294967295, 4294967295, 429496724, 0}};
+    s21_decimal d2 = {{1, 0, 0, 0}};
+    s21_decimal result = {{0, 0, 0, 0}};
+    s21_decimal etalon = {{0, 0, 0, 0}};
+    int res = s21_add(d1, d2, &result);
+    ck_assert(res == OK);
+    ck_assert(s21_is_equal(result, etalon) == 0);
+
+
+#test s21_add_6
+    s21_decimal d1 = {{2147483648, 0, 0, 0}};
+    s21_decimal d2 = {{2147483647, 0, 0, 0}};
+    s21_decimal result = {{4294967295, 0, 0, 0}};
+    s21_decimal etalon = {{0, 0, 0, 0}};
+    int res = s21_add(d1, d2, &result);
+    ck_assert(res == OK);
+    ck_assert(s21_is_equal(result, etalon) == 0);
+
+#test s21_add_7
+    s21_decimal d1 = {{2147483648, 0, 0, 0}};
+    s21_decimal d2 = {{2147483648, 0, 0, 0}};
+    s21_decimal result = {{0, 1, 0, 0}};
+    s21_decimal etalon = {{0, 0, 0, 0}};
+    int res = s21_add(d1, d2, &result);
+    ck_assert(res == OK);
+    ck_assert(s21_is_equal(result, etalon) == 0);
+
+// 6 + -5 = 1
+#test s21_add_8
+    s21_decimal d1 = {{6, 0, 0, 0}};
+    s21_decimal d2 = {{5, 0, 0, 0}}; 
+    s21_decimal result = {{0, 0, 0, 0}};
+    s21_set_bit(&d2, SIGN);
+    s21_decimal etalon = {{1, 0, 0, 0}};
+    int res = s21_add(d1, d2, &result);
+    ck_assert(s21_is_equal(result, etalon) == TRUE);
+    ck_assert(res == OK && s21_get_bit(&result, SIGN) == FALSE);
+
+//6 + -7 = -1
+#test s21_add_9
+    s21_decimal d1 = {{6, 0, 0, 0}};
+    s21_decimal d2 = {{7, 0, 0, 0}}; 
+    s21_decimal result = {{0, 0, 0, 0}};
+    s21_set_bit(&d2, SIGN);
+    s21_decimal etalon = {{1, 0, 0, 0}};
+    s21_set_bit(&etalon, SIGN);
+    int res = s21_add(d1, d2, &result);
+    ck_assert(s21_is_equal(result, etalon) == TRUE);
+    ck_assert(res == OK && s21_get_bit(&result, SIGN) == TRUE);
+
+// 6 + 5 = 11
+#test s21_add_10
+s21_decimal d1 = {{6, 0, 0, 0}};
+s21_decimal d2 = {{5, 0, 0, 0}};
+s21_decimal result = {{0, 0, 0, 0}};
+s21_decimal etalon = {{11, 0, 0, 0}};
+int res = s21_add(d1, d2, &result);
+ck_assert(s21_is_equal(result, etalon) == TRUE);
+ck_assert(res == OK && s21_get_bit(&result, SIGN) == FALSE);
+
+// -6 + -5 = -11
+#test s21_add_11
+s21_decimal d1 = {{6, 0, 0, 0}};
+s21_decimal d2 = {{5, 0, 0, 0}};
+s21_decimal result = {{0, 0, 0, 0}};
+s21_set_bit(&d1, SIGN);
+s21_set_bit(&d2, SIGN);
+s21_decimal etalon = {{11, 0, 0, 0}};
+s21_set_bit(&etalon, SIGN);
+int res = s21_add(d1, d2, &result);
+ck_assert(s21_is_equal(result, etalon) == TRUE);
+ck_assert(res == OK && s21_get_bit(&result, SIGN) == TRUE);
+
+// -6 + 5 = -1
+#test s21_add_12
+s21_decimal d1 = {{6, 0, 0, 0}};
+s21_decimal d2 = {{5, 0, 0, 0}};
+s21_decimal result = {{0, 0, 0, 0}};
+s21_set_bit(&d1, SIGN);
+s21_decimal etalon = {{1, 0, 0, 0}};
+s21_set_bit(&etalon, SIGN);
+int res = s21_add(d1, d2, &result);
+ck_assert(s21_is_equal(result, etalon) == TRUE);
+ck_assert(res == OK && s21_get_bit(&result, SIGN) == TRUE);
+
+// 6 + -5 = 1
+#test s21_add_13
+s21_decimal d1 = {{6, 0, 0, 0}};
+s21_decimal d2 = {{5, 0, 0, 0}};
+s21_decimal result = {{0, 0, 0, 0}};
+s21_set_bit(&d2, SIGN);
+s21_decimal etalon = {{1, 0, 0, 0}};
+int res = s21_add(d1, d2, &result);
+ck_assert(s21_is_equal(result, etalon) == TRUE);
+ck_assert(res == OK && s21_get_bit(&result, SIGN) == FALSE);
+
+#test s21_add_14
+s21_decimal d1 = {{120, 0, 0, 0}};
+s21_decimal d2 = {{55, 0, 0, 0}};
+s21_decimal result = {{0, 0, 0, 0}};
+s21_decimal etalon = {{1255, 0, 0, 0}};
+s21_set_exponent(&etalon, 1);
+s21_set_exponent(&d2, 1);
+int res = s21_add(d1, d2, &result);
+ck_assert(s21_is_equal(result, etalon) == TRUE);
+ck_assert(res == OK && s21_get_bit(&result, SIGN) == FALSE);
+
+#test s21_add_15
+s21_decimal d1 = {{120, 0, 0, 0}};
+s21_decimal d2 = {{55, 0, 0, 0}};
+s21_decimal result = {{0, 0, 0, 0}};
+s21_decimal etalon = {{1145, 0, 0, 0}};
+s21_set_exponent(&etalon, 1);
+s21_set_exponent(&d2, 1);
+s21_set_bit(&d1, SIGN);
+s21_set_bit(&etalon, SIGN);
+int res = s21_add(d1, d2, &result);
+// s21_print_decimal(&result);
+ck_assert(s21_is_equal(result, etalon) == TRUE);
+ck_assert(res == OK && s21_get_bit(&result, SIGN) == TRUE);
+
+printf("TEST s21_add:\n");
+
+

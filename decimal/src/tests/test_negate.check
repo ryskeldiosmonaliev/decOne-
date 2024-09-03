@@ -1,0 +1,44 @@
+#include "../s21_decimal.h"
+
+#test s21_negate_1
+    s21_decimal s21_d = {{12345, 0, 0, 0}};
+    s21_decimal res = {{0,0,0,0}};
+    s21_negate(s21_d, &res);
+    ck_assert(res.bits[3] == 0x80000000);
+
+#test s21_negate_2
+    s21_decimal s21_d = {{12345, 0, 0, 0x80000000}};
+    s21_decimal res = {{0,0,0,0}};
+    s21_negate(s21_d, &res);
+    ck_assert(res.bits[3] == 0);
+
+#test s21_negate_3
+    s21_decimal s21_d = {{0, 0, 0, 0}};
+    s21_decimal res = {{0,0,0,0}};
+    s21_negate(s21_d, &res);
+    ck_assert(s21_get_bit(&res, SIGN));
+
+#test s21_negate_4
+    s21_decimal s21_d = {{0, 0, 0, 0x80000000}};
+    s21_decimal res = {{0,0,0,0}};
+    s21_negate(s21_d, &res);
+    ck_assert(res.bits[3] == 0);
+
+#test s21_negate_5
+    s21_decimal s21_d = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0}};
+    s21_decimal res = {{0,0,0,0}};
+    s21_negate(s21_d, &res);
+    ck_assert(res.bits[3] == 0x80000000);
+
+#test s21_negate_6
+    s21_decimal s21_d = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x80000000}};
+    s21_decimal res = {{0,0,0,0}};
+    s21_negate(s21_d, &res);
+    ck_assert(res.bits[3] == 0);
+
+#test s21_negate_7
+    s21_decimal s21_d = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x80000000}};
+    int res = s21_negate(s21_d, NULL);
+    ck_assert(res = calculation_error);
+
+    printf("TEST s21_negate:\n");

@@ -1,0 +1,55 @@
+#include "../s21_decimal.h"
+
+// -120 - 5.5 = -125.5
+#test s21_sub_1
+  s21_decimal d1 = {{120, 0, 0, 0}};
+  s21_decimal d2 = {{55, 0, 0, 0}};
+  s21_decimal result = {{0, 0, 0, 0}};
+  s21_set_exponent(&d2, 1);
+  s21_set_bit(&d1, SIGN);
+  s21_decimal etalon = {{1255, 0, 0, 0}};
+  s21_set_exponent(&etalon, 1);
+  s21_set_bit(&etalon, SIGN);
+  s21_sub(d1, d2, &result);
+  // s21_print_decimal(&result);
+  ck_assert(s21_is_equal(result, etalon));
+
+// -120 - -5.5 = -114.5
+#test s21_sub_2
+  s21_decimal d1 = {{120, 0, 0, 0}};
+  s21_decimal d2 = {{55, 0, 0, 0}};
+  s21_set_exponent(&d2, 1);
+  s21_set_bit(&d1, SIGN);
+  s21_set_bit(&d2, SIGN);
+  s21_decimal result = {{0,0,0,0}};
+  s21_decimal etalon = {{1145, 0, 0, 0}};
+  s21_set_exponent(&etalon, 1);
+  s21_set_bit(&etalon, SIGN);
+  s21_sub(d1, d2, &result);
+  ck_assert(s21_is_equal(result, etalon));
+
+
+// 120 - 5.5 = 114.5
+#test s21_sub_3
+  s21_decimal d1 = {{120, 0, 0, 0}};
+  s21_decimal d2 = {{55, 0, 0, 0}};
+  s21_set_exponent(&d2, 1);
+  s21_decimal result = {{0,0,0,0}};
+  s21_decimal etalon = {{1145, 0, 0, 0}};
+  s21_set_exponent(&etalon, 1);
+  s21_sub(d1, d2, &result);
+  ck_assert(s21_is_equal(result, etalon));
+
+// 120 - -5.5 = 125.5
+#test s21_sub_4
+  s21_decimal d1 = {{120, 0, 0, 0}};
+  s21_decimal d2 = {{55, 0, 0, 0}};
+  s21_set_exponent(&d2, 1);
+  s21_set_bit(&d2, SIGN);
+  s21_decimal result = {{0,0,0,0}};
+  s21_decimal etalon = {{1255, 0, 0, 0}};
+  s21_set_exponent(&etalon, 1);
+  s21_sub(d1, d2, &result);
+  ck_assert(s21_is_equal(result, etalon));
+
+  printf("TEST s21_sub:\n");

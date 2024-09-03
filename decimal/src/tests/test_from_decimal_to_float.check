@@ -1,0 +1,18 @@
+#include "../s21_decimal.h"
+
+#test from_decimal_to_float_1
+    s21_decimal decimal = {{UINT_MAX, UINT_MAX, UINT_MAX, 0}};
+    s21_set_exponent(&decimal, 28); // КОЭФФИЦИЕНТ МАСШТАБИРОВАНИЯ
+    float fl = 0.0;
+    int res = s21_from_decimal_to_float(decimal, &fl);
+    ck_assert_int_eq(res, OK);
+    ck_assert_float_eq_tol(fl, 7.922817, 0.000001); // Directly use the tolerance in the assertion
+
+#test from_decimal_to_float_2
+    s21_decimal decimal = {{0, 0, 0, 0}};
+    s21_set_exponent(&decimal, 0); // КОЭФФИЦИЕНТ МАСШТАБИРОВАНИЯ
+    float fl = 0.0;
+    int res = s21_from_decimal_to_float(decimal, &fl);
+    ck_assert_int_eq(res, OK);
+    ck_assert_float_eq_tol(fl, 0.0, 0.000001); // Directly use the tolerance in the assertion
+    printf("TEST s21_from_decimal_to_float:\n");

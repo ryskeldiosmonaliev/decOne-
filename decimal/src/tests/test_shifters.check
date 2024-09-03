@@ -1,0 +1,39 @@
+#include "../s21_decimal.h"
+
+#test S21_SHIFT_LEFT_1
+    s21_decimal d1 = {{1, 0, 0, 0}};
+    int res = s21_shift_left(&d1, 31);
+    ck_assert(res == 0);
+    ck_assert(2147483648 == d1.bits[0]);
+
+#test S21_SHIFT_LEFT_2
+    s21_decimal d1 = {{1, 0, 0, 0}};
+    int res = s21_shift_left(&d1, 32);
+    ck_assert(res == 0);
+    ck_assert(1 == d1.bits[1]);
+
+#test S21_SHIFT_LEFT_3
+    s21_decimal d1 = {{1, 0, 0, 0}};
+    int res = s21_shift_left(&d1, 96);
+    ck_assert(res == 1);
+    ck_assert(2147483648 == d1.bits[2]);
+
+#test S21_SHIFT_RIGHT_4
+    s21_decimal d1 = {{0, 0, 1, 0}};
+    int res = s21_shift_right(&d1, 3);
+    ck_assert(res == OK);
+    ck_assert(d1.bits[1] == powers_of_two[29] && d1.bits[2] == 0 && d1.bits[0] == 0);
+    
+#test S21_SHIFT_RIGHT_5
+    s21_decimal d1 = {{0, 1, 0, 0}};
+    int res = s21_shift_right(&d1, 3);
+    ck_assert(res == OK);
+    ck_assert(d1.bits[0] == powers_of_two[29] && d1.bits[1] == 0 && d1.bits[2] == 0);
+
+#test S21_SHIFT_RIGHT_6
+    s21_decimal d1 = {{0, 1, 0, 0}};
+    int res = s21_shift_right(&d1, 97);
+    ck_assert(res == index_error);
+
+    printf("TEST s21_shift_left s21_shift_right:\n");
+

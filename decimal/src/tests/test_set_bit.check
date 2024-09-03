@@ -1,0 +1,93 @@
+#include "../s21_decimal.h"
+
+#test s21_set_bit_1
+    int res = 0;
+    s21_decimal s21_d = {{0, 0, 0, 0}};
+    res = s21_set_bit(&s21_d, 64);
+    ck_assert(s21_d.bits[2] == 1);
+    ck_assert(res == OK);
+
+#test s21_set_bit_2
+    int res = 0;
+    s21_decimal s21_d = {{0, 0, 0, 0}};
+    res = s21_set_bit(&s21_d, 31);
+    ck_assert(s21_d.bits[0] == 2147483648);
+    ck_assert(res == OK);
+
+#test s21_set_bit_3
+    int res = 0;
+    s21_decimal s21_d = {{0, 0, 0, 0}};
+    res = s21_set_bit(&s21_d, 31);
+    res = s21_set_bit(&s21_d, 0);
+    ck_assert(s21_d.bits[0] == 2147483649);
+    ck_assert(res == OK);
+
+#test s21_set_bit_4
+    int res = 0;
+    s21_decimal s21_d = {{0, 0, 0, 0}};
+    res = s21_set_bit(&s21_d, 128);
+    ck_assert(s21_d.bits[3] == 0);
+    ck_assert(res == index_error);
+
+#test s21_set_bit_5
+    int res = 0;
+    s21_decimal s21_d = {{0, 0, 0, 0}};
+    res = s21_set_bit(&s21_d, 127);
+    ck_assert(s21_d.bits[3] == 2147483648);
+    ck_assert(res == OK);
+
+#test s21_set_bit_6
+    int res = 0;
+    s21_decimal s21_d = {{0, 0, 0, 0}};
+    res = s21_set_bit(&s21_d, 55);
+    ck_assert(s21_d.bits[1] == 8388608);
+    ck_assert(res == OK);
+
+#test s21_set_bit_7
+    int res = 0;
+    s21_decimal s21_d = {{0, 0, 0, 0}};
+    res = s21_set_bit(&s21_d, 129);
+    ck_assert(res == index_error);
+
+#test s21_set_bit_8
+    int res = 0;
+    s21_decimal s21_d = {{0, 0, 0, 0}};
+    res = s21_set_bit(&s21_d, 0);
+    ck_assert(s21_d.bits[0] == 1);
+    ck_assert(res == OK);
+
+#test s21_set_bit_9
+    int res = 0;
+    s21_decimal s21_d = {{1, 0, 0, 0}};
+    res = s21_set_bit_off(&s21_d, 0);
+    ck_assert(s21_d.bits[0] == 0);
+    ck_assert(res == OK);
+
+#test s21_set_bit_10
+    int res = 0;
+    s21_decimal s21_d = {{0, 0, 0, 0}};
+    res = s21_set_bit_off(&s21_d, 129);
+    ck_assert(res == index_error);
+
+#test s21_set_bit_11
+    int res = 0;
+    s21_decimal s21_d = {{0, 1, 0, 0}};
+    res = s21_set_bit_off(&s21_d, 32);
+    ck_assert(s21_d.bits[1] == 0);
+    ck_assert(res == OK);
+
+#test s21_set_bit_12
+    int res = 0;
+    s21_decimal s21_d = {{0, 0, 1, 0}};
+    res = s21_set_bit_off(&s21_d, 64);
+    ck_assert(s21_d.bits[2] == 0);
+    ck_assert(res == OK);
+
+#test s21_set_bit_13
+    int res = 0;
+    s21_decimal s21_d = {{0, 0, 0, 1}};
+    res = s21_set_bit_off(&s21_d, 96);
+    ck_assert(s21_d.bits[3] == 0);
+    ck_assert(res == OK);
+    
+    printf("TEST s21_set_bit:\n");

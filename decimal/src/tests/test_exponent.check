@@ -1,0 +1,38 @@
+#include "../s21_decimal.h"
+
+#test s21_get_exponent_1
+    s21_decimal s21_d = {{0, 0, 0, 262144}};
+    unsigned int res = s21_get_exponent(&s21_d);
+    ck_assert(res == 4);
+
+#test s21_get_exponent_2
+    s21_decimal s21_d = {{0, 0, 0, 65536}};
+    unsigned int res = s21_get_exponent(&s21_d);
+    ck_assert(res == 1);
+
+#test s21_get_exponent_3
+    s21_decimal s21_d = {{0, 0, 0, 65536}};
+    s21_set_bit(&s21_d, SIGN);
+    unsigned int res = s21_get_exponent(&s21_d);
+    ck_assert(res == 1);
+    
+
+#test s21_get_exponent_4
+    s21_decimal s21_d = {{0, 0, 0, 0}};
+    s21_set_exponent(&s21_d, 4);
+    unsigned int res = s21_get_exponent(&s21_d);
+    ck_assert(res == 4);
+
+#test s21_get_exponent_5
+    s21_decimal s21_d = {{0, 0, 0, 0}};
+    s21_set_exponent(&s21_d, 27);
+    unsigned int res = s21_get_exponent(&s21_d);
+    ck_assert(res == 27);
+
+
+#test s21_get_exponent_6
+    s21_decimal s21_d = {{0, 0, 0, 0}};
+    int res = s21_set_exponent(&s21_d, 29);
+    ck_assert(res == index_error);
+
+    printf("TEST s21_exponent:\n");

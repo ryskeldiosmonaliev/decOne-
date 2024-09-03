@@ -1,0 +1,77 @@
+#include "../s21_decimal.h"
+
+#test s21_is_equal_1
+    // 79228162514264337593543950335 
+    s21_decimal one = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0}};
+    // 79228162514264337593543950335
+    s21_decimal two = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0}};
+    int res = s21_is_equal(one, two); 
+    ck_assert(res == 1);
+
+
+#test s21_is_equal_2
+    // 79228162514264337593543950335 
+    s21_decimal one = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0}};
+    // 79228162514264337593543950334
+    s21_decimal two = {{0xFFFFFFFE, 0xFFFFFFFF, 0xFFFFFFFF, 0}};
+    int res = s21_is_equal(one, two); 
+    ck_assert(res == 0);
+
+#test s21_is_equal_3
+    s21_decimal one = {{1, 1, 1, 0}};
+    s21_decimal two = {{1, 1, 1, 0}};
+    s21_set_bit(&one, SIGN);
+    s21_set_bit(&two, SIGN);
+    int res = s21_is_equal(one, two);
+    ck_assert(res == 1);
+
+#test s21_is_equal_4
+    s21_decimal one = {{1, 1, 1, 0}};
+    s21_decimal two = {{1, 1, 1, 0}};
+    s21_set_bit(&one, SIGN);
+    int res = s21_is_equal(one, two);
+    ck_assert(res == 0);
+
+#test s21_is_equal_5
+    s21_decimal one = {{0, 0, 0, 0}};
+    s21_decimal two = {{0, 0, 0, 0}};
+    s21_set_bit(&one, SIGN);
+    int res = s21_is_equal(one, two);
+    ck_assert(res == 1);
+
+#test s21_is_equal_6
+    s21_decimal one = {{0, 0, 0, 0}};
+    s21_decimal two = {{0, 0, 0, 0}};
+    s21_set_bit(&one, SIGN);
+    s21_set_exponent(&one, 1);
+    s21_set_exponent(&two, 2);
+    int res = s21_is_equal(one, two);
+    ck_assert(res == 0);
+
+#test s21_is_equal_7
+    s21_decimal one = {{0, 0, 0, 0}};
+    s21_decimal two = {{0, 0, 0, 0}};
+    s21_set_exponent(&one, 1);
+    s21_set_exponent(&two, 1);
+    int res = s21_is_equal(one, two);
+    ck_assert(res == 1);
+
+#test s21_is_equal_8
+    s21_decimal one = {{10, 20, 30, 40}};
+    s21_decimal two = {{10, 20, 30, 40}};
+    s21_set_exponent(&one, 0);
+    s21_set_exponent(&two, 1);
+    int res = s21_is_equal(one, two);
+    ck_assert(res == 0);
+
+
+#test s21_is_equal_9
+    s21_decimal one = {{0, 0, 0, 0}};
+    s21_decimal two = {{0, 0, 0, 0}};
+    s21_set_bit(&one, SIGN);
+    s21_set_exponent(&one, 0);
+    s21_set_exponent(&two, 10);
+    int res = s21_is_equal(one, two);
+    ck_assert(res == 0);
+
+    printf("TEST s21_is_equal:\n");

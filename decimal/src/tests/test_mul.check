@@ -1,0 +1,180 @@
+#include "../s21_decimal.h"
+
+#test S21_MUL
+
+s21_decimal result = {{0}};                               //  0
+s21_decimal value_01 = {{0, 0, 0, 0x00000000}};           //  0
+s21_decimal value_02 = {{0, 0, 0, 0x00000000}};           //  0
+s21_decimal correct_answer_01 = {{0, 0, 0, 0x00000000}};  //  0
+s21_empty_decimal(&result);
+ck_assert_int_eq(s21_mul(value_01, value_02, &result), 0);  //  0 * 0 = 0
+for (int i = 0; i < 4; i++) {
+  ck_assert_int_eq(result.bits[i], correct_answer_01.bits[i]);
+}
+s21_decimal value_03 = {{0, 0, 0, 0x00000000}};           //  0
+s21_decimal value_04 = {{0, 0, 0, 0x80000000}};           // -0
+s21_decimal correct_answer_02 = {{0, 0, 0, 0x00000000}};  //  0
+s21_empty_decimal(&result);
+ck_assert_int_eq(s21_mul(value_03, value_04, &result), 0);  //  0 * (-0) = 0
+for (int i = 0; i < 4; i++) {
+  ck_assert_int_eq(result.bits[i], correct_answer_02.bits[i]);
+}
+s21_decimal value_05 = {{0, 0, 0, 0x00000000}};           //  0
+s21_decimal value_06 = {{25, 0, 0, 0x00000000}};          //  25
+s21_decimal correct_answer_03 = {{0, 0, 0, 0x00000000}};  //  0
+s21_empty_decimal(&result);
+ck_assert_int_eq(s21_mul(value_05, value_06, &result), 0);  //  0 * 25 = 0
+for (int i = 0; i < 4; i++) {
+  ck_assert_int_eq(result.bits[i], correct_answer_03.bits[i]);
+}
+s21_decimal value_07 = {{0, 0, 0, 0x00000000}};           //  0
+s21_decimal value_08 = {{25, 0, 0, 0x80000000}};          // -25
+s21_decimal correct_answer_04 = {{0, 0, 0, 0x00000000}};  //  0
+s21_empty_decimal(&result);
+ck_assert_int_eq(s21_mul(value_07, value_08, &result), 0);  //  0 * (-25) = 0
+for (int i = 0; i < 4; i++) {
+  ck_assert_int_eq(result.bits[i], correct_answer_04.bits[i]);
+}
+
+s21_decimal value_15 = {{2147483647, 0, 0, 0}};  //  2 147 483 647
+s21_decimal value_16 = {{0, 0, 0, 0x00000000}};  //  0
+s21_decimal correct_answer_08 = {{0}};           //  0
+s21_empty_decimal(&result);
+ck_assert_int_eq(s21_mul(value_15, value_16, &result),
+                 0);  //  2 147 483 647 * 0 = 0
+for (int i = 0; i < 4; i++) {
+  ck_assert_int_eq(result.bits[i], correct_answer_08.bits[i]);
+}
+s21_decimal value_17 = {{2147483647, 0, 0, 0}};   //  2 147 483 647
+s21_decimal value_18 = {{25, 0, 0, 0x00000000}};  //  25
+s21_decimal correct_answer_09 = {
+    {2147483623, 12, 0, 0x00000000}};  //  53 687 091 175
+s21_empty_decimal(&result);
+ck_assert_int_eq(s21_mul(value_17, value_18, &result),
+                 0);  //  2 147 483 647 * 0 = 53 687 091 175
+for (int i = 0; i < 4; i++) {
+  ck_assert_int_eq(result.bits[i], correct_answer_09.bits[i]);
+}
+s21_decimal value_19 = {{2147483647, 0, 0, 0}};   //  2 147 483 647
+s21_decimal value_20 = {{25, 0, 0, 0x80000000}};  // -25
+s21_decimal correct_answer_10 = {
+    {2147483623, 12, 0, 0x80000000}};  // -53 687 091 175
+s21_empty_decimal(&result);
+ck_assert_int_eq(s21_mul(value_19, value_20, &result),
+                 0);  //  2 147 483 647 * (-25) = -53 687 091 175
+for (int i = 0; i < 4; i++) {
+  ck_assert_int_eq(result.bits[i], correct_answer_10.bits[i]);
+}
+
+
+s21_decimal value_27 = {{2147483647, 0, 0, 0x80000000}};  // -2 147 483 647
+s21_decimal value_28 = {{0, 0, 0, 0x00000000}};           //  0
+s21_decimal correct_answer_14 = {{0}};                    //  0
+s21_empty_decimal(&result);
+ck_assert_int_eq(s21_mul(value_27, value_28, &result),
+                 0);  // -2 147 483 647 * 0 = 0
+for (int i = 0; i < 4; i++) {
+  ck_assert_int_eq(result.bits[i], correct_answer_14.bits[i]);
+}
+s21_decimal value_29 = {{2147483647, 0, 0, 0x80000000}};  // -2 147 483 647
+s21_decimal value_30 = {{25, 0, 0, 0x00000000}};          //  25
+s21_decimal correct_answer_15 = {
+    {2147483623, 12, 0, 0x80000000}};  // -53 687 091 175
+s21_empty_decimal(&result);
+ck_assert_int_eq(s21_mul(value_29, value_30, &result),
+                 0);  // -2 147 483 647 * 25 = -53 687 091 175
+for (int i = 0; i < 4; i++) {
+  ck_assert_int_eq(result.bits[i], correct_answer_15.bits[i]);
+}
+s21_decimal value_31 = {{2147483647, 0, 0, 0x80000000}};  // -2 147 483 647
+s21_decimal value_32 = {{25, 0, 0, 0x80000000}};          // -25
+s21_decimal correct_answer_16 = {
+    {2147483623, 12, 0, 0x00000000}};  //  53 687 091 175
+s21_empty_decimal(&result);
+ck_assert_int_eq(s21_mul(value_31, value_32, &result),
+                 0);  // -2 147 483 647 * (-25) = 53 687 091 175
+for (int i = 0; i < 4; i++) {
+  ck_assert_int_eq(result.bits[i], correct_answer_16.bits[i]);
+}
+s21_decimal value_33 = {{2, 22222, 0, 0x00000000}};  // 95442763251714
+s21_decimal value_34 = {{3, 22222, 0, 0x00000000}};          // 95442763251715
+s21_decimal correct_answer_17 = {
+    {6, 111110, 493817284, 0x00000000}};  //  9109321057122823797687189510
+s21_empty_decimal(&result);
+ck_assert_int_eq(s21_mul(value_33, value_34, &result),
+                 0);  
+for (int i = 0; i < 4; i++) {
+  ck_assert_int_eq(result.bits[i], correct_answer_17.bits[i]);
+}
+s21_decimal value_35 = {{0, 0, 1, 0x80090000}};  // 1844674407370955.1616
+s21_decimal value_36 = {{0, 0, 1, 0x00090000}};          // 1844674407370955.1616
+s21_decimal correct_answer_18 = {
+    {1522115079, 1593240287, 1844674407, 0x80080000}};  //  9109321057122823797687189510
+s21_empty_decimal(&result);
+ck_assert_int_eq(s21_mul(value_35, value_36, &result),
+                 0);  
+for (int i = 0; i < 4; i++) {
+  ck_assert_int_eq(result.bits[i], correct_answer_18.bits[i]);
+}
+s21_decimal value_37 = {{4, 0, 1, 0x80090000}};  // 1844674407370955.1616
+s21_decimal value_38 = {{0, 0, 1, 0x00090000}};          // 1844674407370955.1616
+s21_decimal correct_answer_19 = {
+    {310878117, 1593240289, 1844674407, 0x80080000}};  //  9109321057122823797687189510
+s21_empty_decimal(&result);
+ck_assert_int_eq(s21_mul(value_37, value_38, &result),
+                 0);  
+for (int i = 0; i < 4; i++) {
+  ck_assert_int_eq(result.bits[i], correct_answer_19.bits[i]);
+}
+
+s21_decimal value_39 = {{9, 0, 1, 0x80090000}};  // 1844674407370955.1616
+s21_decimal value_40 = {{0, 0, 1, 0x00090000}};          // 1844674407370955.1616
+s21_decimal correct_answer_20 = {
+    {944315562, 1593240291,  1844674407, 0x80080000}};  //  9109321057122823797687189510
+s21_empty_decimal(&result);
+ck_assert_int_eq(s21_mul(value_39, value_40, &result),
+                 0);  
+for (int i = 0; i < 4; i++) {
+  ck_assert_int_eq(result.bits[i], correct_answer_20.bits[i]);
+}
+s21_big_dec value_42 = {{1, 1, 1, 1,1,1,0x80000000}};  // 1844674407370955.1616
+s21_big_dec correct_answer_21 = {
+    {0, 0,  0, 0,2,2,0}};  //  9109321057122823797687189510
+  s21_set_bit_big(&value_42, 161);
+  s21_set_bit_big(&value_42, 129);
+  s21_set_bit_off_big(&value_42, 0);
+  s21_set_bit_off_big(&value_42, 32);
+  s21_set_bit_off_big(&value_42, 64);
+  s21_set_bit_off_big(&value_42, 96);
+  s21_set_bit_off_big(&value_42, 128);
+  s21_set_bit_off_big(&value_42, 160);
+  s21_set_bit_off_big(&value_42, 192);
+  s21_set_bit_off_big(&value_42, 223);
+
+for (int i = 0; i < 7; i++) {
+  ck_assert_int_eq(value_42.bits[i], correct_answer_21.bits[i]);
+}
+
+s21_decimal value_43 = {{0, 0, 1, 0x80000000}};  // 
+s21_decimal value_44 = {{0, 0, 1, 0x00000000}};          //
+s21_decimal correct_answer_22 = {
+    {0, 0,  0, 0}};  //  0
+s21_empty_decimal(&result);
+ck_assert_int_eq(s21_mul(value_43, value_44, &result),
+                 2);  
+for (int i = 0; i < 4; i++) {
+  ck_assert_int_eq(result.bits[i], correct_answer_22.bits[i]);
+}
+s21_decimal value_45 = {{0, 0, 1, 0x80000000}};  // 
+s21_decimal value_46 = {{0, 0, 1, 0x80000000}};          //
+s21_decimal correct_answer_23 = {
+    {0, 0,  0, 0}};  //  0
+s21_empty_decimal(&result);
+ck_assert_int_eq(s21_mul(value_45, value_46, &result),
+                 1);  
+for (int i = 0; i < 4; i++) {
+  ck_assert_int_eq(result.bits[i], correct_answer_23.bits[i]);
+}
+
+ printf("TEST s21_mul:\n");
+

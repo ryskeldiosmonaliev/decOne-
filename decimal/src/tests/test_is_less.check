@@ -1,0 +1,204 @@
+#include "../s21_decimal.h"
+
+// Равные положительные децималы
+#test s21_is_less_1
+    s21_decimal one = {{1, 1, 1, 0}};
+    s21_decimal two = {{1, 1, 1, 0}};
+    int res = s21_is_less(one, two);
+    ck_assert(res == 0);
+
+// Равные отрицательные децималы
+#test s21_is_less_2
+    s21_decimal one = {{1, 1, 1, 0}};
+    s21_decimal two = {{1, 1, 1, 0}};
+    s21_set_bit(&one, SIGN);
+    s21_set_bit(&two, SIGN);
+    int res = s21_is_less(one, two);
+    ck_assert(res == 0);
+
+// Первый положительный второй отрицательный равные мантиссы
+#test s21_is_less_3
+    s21_decimal one = {{1, 1, 1, 0}};
+    s21_decimal two = {{1, 1, 1, 0}};
+    s21_set_bit(&two, SIGN);
+    int res = s21_is_less(one, two);
+    ck_assert(res == 0);
+
+// Второй положительный первый отрицательный равные мантиссы
+#test s21_is_less_4
+    s21_decimal one = {{1, 1, 1, 0}};
+    s21_decimal two = {{1, 1, 1, 0}};
+    s21_set_bit(&one, SIGN);
+    int res = s21_is_less(one, two);
+    ck_assert(res == 1);
+
+// Первый децимал меньше по мантиссе отрицательные
+#test s21_is_less_5
+    s21_decimal one = {{1, 1, 1, 0}};
+    s21_decimal two = {{1, 1, 0, 0}};
+    s21_set_bit(&one, SIGN);
+    s21_set_bit(&two, SIGN);
+    int res = s21_is_less(one, two);
+    ck_assert(res == 1);
+
+
+// Первый децимал меньше по экспоненте отрицательные
+#test s21_is_less_6
+    s21_decimal one = {{12345, 12345, 12345, 0}};
+    s21_decimal two = {{12345, 12345, 12345, 0}};
+    s21_set_bit(&one, SIGN);
+    s21_set_bit(&two, SIGN);
+    s21_set_exponent(&one, 5);
+    s21_set_exponent(&two, 10);
+    int res = s21_is_less(one, two);
+    ck_assert(res == 1);
+	
+
+// Первый децимал меньше по мантиссе положительные
+#test s21_is_less_7
+    s21_decimal one = {{1, 1, 0, 0}};
+    s21_decimal two = {{1, 1, 1, 0}};
+    int res = s21_is_less(one, two);
+    ck_assert(res == 1);
+
+// Первый децимал меньше по экспоненте положительные
+#test s21_is_less_8
+    s21_decimal one = {{12345, 12345, 12345, 0}};
+    s21_decimal two = {{12345, 12345, 12345, 0}};
+    s21_set_exponent(&one, 10);
+    s21_set_exponent(&two, 5);
+    int res = s21_is_less(one, two);
+    ck_assert(res == 1);
+
+// Второй децимал меньше по мантиссе отрицательные
+#test s21_is_less_9
+    s21_decimal one = {{1, 1, 0, 0}};
+    s21_decimal two = {{1, 1, 1, 0}};
+    s21_set_bit(&one, SIGN);
+    s21_set_bit(&two, SIGN);
+    int res = s21_is_less(one, two);
+    ck_assert(res == 0);
+
+// Второй децимал меньше по экспоненте отрицательные
+#test s21_is_less_10
+    s21_decimal one = {{12345, 12345, 12345, 0}};
+    s21_decimal two = {{12345, 12345, 12345, 0}};
+    s21_set_bit(&one, SIGN);
+    s21_set_bit(&two, SIGN);
+    s21_set_exponent(&one, 10);
+    s21_set_exponent(&two, 5);
+    int res = s21_is_less(one, two);
+    ck_assert(res == 0);
+
+// 12.3 меньше чем 12.34
+#test s21_is_less_11
+    s21_decimal one = {{0, 0, 123, 0}};
+    s21_decimal two = {{0, 0, 1234, 0}};
+    s21_set_exponent(&one, 1); // 10 в делителе
+    s21_set_exponent(&two, 2); // 100 в делителе
+    int res = s21_is_less(one, two);
+    ck_assert(res == 1);  
+
+// наименьшее положительное число децимала 0.00000000000000000000000000001 
+// (экспонента 28) и число в 10 раз больше 0.0000000000000000000000000001 (экспонента 27)
+#test s21_is_less_12
+    s21_decimal one = {{0, 0, 1, 0}};
+    s21_decimal two = {{0, 0, 1, 0}};
+    s21_set_exponent(&one, 28); 
+    s21_set_exponent(&two, 27); 
+    int res = s21_is_less(one, two);
+    ck_assert(res == 1);
+
+// наименьшее положительное число децимала 0.00000000000000000000000000001 
+// и число на 1 больше
+#test s21_is_less_13
+    s21_decimal one = {{0, 0, 1, 0}};
+    s21_decimal two = {{0, 0, 2, 0}};
+    s21_set_exponent(&one, 28); 
+    s21_set_exponent(&two, 28); 
+    int res = s21_is_less(one, two);
+    ck_assert(res == 1);
+
+// минимальный децимал и максимальный
+#test s21_is_less_14
+    // -79228162514264337593543950335
+    s21_decimal one = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x80000000}};
+    // 79228162514264337593543950335
+    s21_decimal two = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x0}};
+    int res = s21_is_less(one, two);
+    ck_assert(res == 1);
+
+// два максимальных децимала ожидаемый - результат 0
+#test s21_is_less_15
+    // 79228162514264337593543950335
+    s21_decimal one = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x0}};
+    // 79228162514264337593543950335
+    s21_decimal two = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x0}};
+    int res = s21_is_less(one, two);
+    ck_assert(res == 0);
+
+// максимальный и на единичку поменьше
+#test s21_is_less_16
+    // 79228162514264337593543950335 
+    s21_decimal one = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0}};
+    // 79228162514264337593543950334
+    s21_decimal two = {{0xFFFFFFFE, 0xFFFFFFFF, 0xFFFFFFFF, 0}};
+    int res = s21_is_less(one, two);
+    ck_assert(res == 0);
+
+// с разными экспанентами значит первый будет поменьше
+// 7922816251426433759354.3950335 < 79228162514264337593543.950335
+
+#test s21_is_less_17
+    // 79228162514264337593543950335 
+    s21_decimal one = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0}};
+    // 79228162514264337593543950334
+    s21_decimal two = {{0xFFFFFFFE, 0xFFFFFFFF, 0xFFFFFFFF, 0}};
+    s21_set_exponent(&one, 7); 
+    s21_set_exponent(&two, 6);
+    int res = s21_is_less(one, two); 
+    ck_assert(res == 1);
+
+
+// с разными экспонентами значит первый будет поменьше
+// 7922816251426433759354.3950335 < 79228162514264337593543.950335
+
+#test s21_is_less_18
+    // 79228162514264337593543950335 
+    s21_decimal one = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0}};
+    // 79228162514264337593543950334
+    s21_decimal two = {{0xFFFFFFFE, 0xFFFFFFFF, 0xFFFFFFFF, 0}};
+    s21_set_exponent(&one, 7); 
+    s21_set_exponent(&two, 6);
+    s21_set_bit(&one, SIGN);
+    s21_set_bit(&two, SIGN);
+    int res = s21_is_less(one, two); 
+    ck_assert(res == 0);
+    // -7922816251426433759354.3950335 < -79228162514264337593543.950335 = 0
+
+
+// Сравниваю все экспоненты на двух самых больших числах 
+#test s21_is_less_19
+    // 79228162514264337593543950335 
+    s21_decimal one = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0}};
+    // 79228162514264337593543950335
+    s21_decimal two = {{0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0}};
+
+    int exp1 = 0;
+    int exp2 = 28;
+
+    for (; exp1 <= 28 && exp2 >= 0; exp1++, exp2--) {
+        s21_set_exponent(&one, exp1); 
+        s21_set_exponent(&two, exp2);
+
+        int res = s21_is_less(one, two);
+
+        if(exp1 > exp2)
+            ck_assert(res == 1);
+        else if(exp1 <= exp2)
+            ck_assert(res == 0);
+    }
+
+    printf("TEST s21_is_less:\n");
+
+

@@ -1,0 +1,17 @@
+#include "../s21_decimal.h"
+
+#test s21_mul_ten_1
+    s21_decimal decimal = {{123, 0, 0, 0}};
+    int res = s21_mult_ten(&decimal, 2);
+    ck_assert(res == OK);
+    ck_assert(decimal.bits[0] == 12300);
+
+#test s21_mul_ten_2
+    s21_decimal decimal = {{UINT_MAX, 0, 0, 0}};
+    int res = s21_mult_ten(&decimal, 5);
+    ck_assert(res == OK);
+    ck_assert(decimal.bits[1] == 99999);
+    ck_assert(decimal.bits[0] == 4294867296);
+
+    printf("TEST s21_mul_ten:\n");
+

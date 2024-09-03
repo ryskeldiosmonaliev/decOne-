@@ -1,0 +1,887 @@
+#include "../s21_decimal.h"
+
+
+
+
+// TESTS // TESTS // TESTS // TESTS // TESTS // TESTS // TESTS // TESTS
+// TESTS // TESTS // TESTS // TESTS // TESTS // TESTS // TESTS // TESTS
+// TESTS // TESTS // TESTS // TESTS // TESTS // TESTS // TESTS // TESTS
+
+
+
+#test _NULL
+  // -30.7339287
+  float input_float = -30.7339287;
+  int s21_return_code = s21_from_float_to_decimal(input_float, NULL);
+  ck_assert_int_eq(s21_return_code, 1);
+
+
+#test _INFINITY
+  s21_decimal s21_result_decimal = {{0x0, 0x0, 0x0, 0x0}};
+  // INFINITY
+  float input_float = INFINITY;
+  // INFINITY
+  s21_decimal expected_result = DECIMAL_POSITIVE_INFINITY;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_mem_eq(&s21_result_decimal, &expected_result, sizeof(s21_decimal));
+  // ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, 1);
+
+
+#test negative_INFINITY
+  s21_decimal s21_result_decimal = {{0x0, 0x0, 0x0, 0x0}};
+  // -INFINITY
+  float input_float = -INFINITY;
+  // -INFINITY
+  s21_decimal expected_result = DECIMAL_NEGATIVE_INFINITY;
+
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+
+  ck_assert_mem_eq(&s21_result_decimal, &expected_result, sizeof(s21_decimal));
+  ck_assert_int_eq(s21_return_code, 1);
+
+
+#test _NAN
+  s21_decimal s21_result_decimal = {{0x0, 0x0, 0x0, 0x0}};
+  // NAN
+  float input_float = NAN;
+  // NAN
+  s21_decimal expected_result = DECIMAL_POSITIVE_NAN;
+
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+
+  ck_assert_mem_eq(&s21_result_decimal, &expected_result, sizeof(s21_decimal));
+  ck_assert_int_eq(s21_return_code, 1);
+
+
+#test _NAN2
+  s21_decimal s21_result_decimal = {{0x0, 0x0, 0x0, 0x0}};
+  // -NAN
+  float input_float = -NAN;
+  // -NAN
+  s21_decimal expected_result = DECIMAL_NEGATIVE_NAN;
+
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+
+  ck_assert_mem_eq(&s21_result_decimal, &expected_result, sizeof(s21_decimal));
+  ck_assert_int_eq(s21_return_code, 1);
+
+
+#test ok
+  s21_decimal s21_result_decimal = {{0x0, 0x0, 0x0, 0x0}};
+  // -30.7339287
+  float input_float = -30.7339287;
+  // -30.73393
+  s21_decimal expected_result = {{0x2EE571, 0x0, 0x0, 0x80050000}};
+
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_0
+  float input_float = 0.9503300189971924f;
+  // seven significant digits: 0.9503300
+  s21_decimal expected_result = {
+      {0x00910244, 0x00000000, 0x00000000, 0b00000000000001110000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test manual_1
+  float input_float = 1234567.0f;
+  s21_decimal expected_result = {
+      {1234567, 0x00000000, 0x00000000, 0b00000000000000000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test manual_2
+  float input_float = 0.00000123456f;
+  s21_decimal expected_result = {
+      {0x0012D680, 0x00000000, 0x00000000, 0b00000000000011000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_2
+  float input_float = -333333344.0f;
+  // seven significant digits: -333333300
+  s21_decimal expected_result = {
+      {0x13DE4334, 0x00000000, 0x00000000, 0b10000000000000000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_3
+  float input_float = -0.00000000000000000000000000010000000031710769f;
+  // seven significant digits: -0.0000000000000000000000000001
+  s21_decimal expected_result = {
+      {0x00000001, 0x00000000, 0x00000000, 0b10000000000111000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_4
+  float input_float = 7922.81640625f;
+  // seven significant digits: 7922.816
+  s21_decimal expected_result = {
+      {0x0078E480, 0x00000000, 0x00000000, 0b00000000000000110000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_5
+  float input_float = 0.0000009999999974752427f;
+  // seven significant digits: 0.000001000000
+  s21_decimal expected_result = {
+      {0x000F4240, 0x00000000, 0x00000000, 0b00000000000011000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_6
+  float input_float = 333333344.0f;
+  // seven significant digits: 333333300
+  s21_decimal expected_result = {
+      {0x13DE4334, 0x00000000, 0x00000000, 0b00000000000000000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_7
+  float input_float = -300000000.0f;
+  // seven significant digits: -300000000
+  s21_decimal expected_result = {
+      {0x11E1A300, 0x00000000, 0x00000000, 0b10000000000000000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_8
+  float input_float = 0.00000000000000000000000000010000000031710769f;
+  // seven significant digits: 0.0000000000000000000000000001
+  s21_decimal expected_result = {
+      {0x00000001, 0x00000000, 0x00000000, 0b00000000000111000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_9
+  float input_float = 10000000272564224.0f;
+  // seven significant digits: 10000000000000000
+  s21_decimal expected_result = {
+      {0x6FC10000, 0x002386F2, 0x00000000, 0b00000000000000000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_10
+  float input_float = -555555563241472.0f;
+  // seven significant digits: -555555600000000
+  s21_decimal expected_result = {
+      {0x5E30E400, 0x0001F946, 0x00000000, 0b10000000000000000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_11
+  float input_float = -0.10000000149011612f;
+  // seven significant digits: -0.1000000
+  s21_decimal expected_result = {
+      {0x000F4240, 0x00000000, 0x00000000, 0b10000000000001110000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_12
+  float input_float = 79228162514264340000000000000.0f;
+
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_return_code, 1);
+
+
+#test gen_13
+  float input_float = 0.000000999999883788405f;
+  // seven significant digits: 0.0000009999999
+  s21_decimal expected_result = {
+      {0x0098967F, 0x00000000, 0x00000000, 0b00000000000011010000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_14
+  float input_float = -0.0f;
+  // seven significant digits: -0.0
+  s21_decimal expected_result = {
+      {0x00000000, 0x00000000, 0x00000000, 1 << 31}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_15
+  float input_float = 1234567813922816.0f;
+  // seven significant digits: 1234568000000000
+  s21_decimal expected_result = {
+      {0x43175000, 0x000462D5, 0x00000000, 0b00000000000000000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_16
+  float input_float = 0.12300000339746475f;
+  // seven significant digits: 0.1230000
+  s21_decimal expected_result = {
+      {0x0012C4B0, 0x00000000, 0x00000000, 0b00000000000001110000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_17
+  float input_float = 5.5f;
+  // seven significant digits: 5.5
+  s21_decimal expected_result = {
+      {0x00000037, 0x00000000, 0x00000000, 0b00000000000000010000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_18
+  float input_float = 0.12345679104328156f;
+  // seven significant digits: 0.1234568
+  s21_decimal expected_result = {
+      {0x0012D688, 0x00000000, 0x00000000, 0b00000000000001110000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_19
+  float input_float = -2934834578801557500.0f;
+  // seven significant digits: -2934835000000000000
+  s21_decimal expected_result = {
+      {0x11623000, 0x28BAA0E2, 0x00000000, 0b10000000000000000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_20
+  float input_float = -0.12300000339746475f;
+  // seven significant digits: -0.1230000
+  s21_decimal expected_result = {
+      {0x0012C4B0, 0x00000000, 0x00000000, 0b10000000000001110000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_21
+  float input_float = -12.0f;
+  // seven significant digits: -12.0
+  s21_decimal expected_result = {
+      {12, 0x00000000, 0x00000000, 1 << 31}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_22
+  float input_float = 7922816357207376000.0f;
+  // seven significant digits: 7922816000000000000
+  s21_decimal expected_result = {
+      {0xD4C80000, 0x6DF37F2C, 0x00000000, 0b00000000000000000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_23
+  float input_float = -79228162514264340000000000000.0f;
+
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_return_code, 1);
+
+
+#test gen_24
+  float input_float = -42353456.0f;
+  // seven significant digits: -42353460
+  s21_decimal expected_result = {
+      {0x02864334, 0x00000000, 0x00000000, 0b10000000000000000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_25
+  float input_float = 555555563241472.0f;
+  // seven significant digits: 555555600000000
+  s21_decimal expected_result = {
+      {0x5E30E400, 0x0001F946, 0x00000000, 0b00000000000000000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_26
+  float input_float = 12345.677734375f;
+  // seven significant digits: 12345.68
+  s21_decimal expected_result = {
+      {0x0012D688, 0x00000000, 0x00000000, 0b00000000000000100000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_27
+  float input_float = 12.0f;
+  // seven significant digits: 12.0
+  s21_decimal expected_result = {
+      {12, 0x00000000, 0x00000000, 0b00000000000000000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_28
+  float input_float = 0.00000012345671507318912f;
+  // seven significant digits: 0.0000001234567
+  s21_decimal expected_result = {
+      {0x0012D687, 0x00000000, 0x00000000, 0b00000000000011010000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_29
+  float input_float = -7.922816276550293f;
+  // seven significant digits: -7.922816
+  s21_decimal expected_result = {
+      {0x0078E480, 0x00000000, 0x00000000, 0b10000000000001100000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_30
+  float input_float = 7779227900590436000000000000000.0f;
+
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_return_code, 1);
+
+
+#test gen_31
+  float input_float = -11353455621455670000000000.0f;
+  // seven significant digits: -11353460000000000000000000
+  s21_decimal expected_result = {
+      {0xAD500000, 0x4CC3B6DE, 0x00096430, 0b10000000000000000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_32
+  float input_float = 7.922816276550293f;
+  // seven significant digits: 7.922816
+  s21_decimal expected_result = {
+      {0x0078E480, 0x00000000, 0x00000000, 0b00000000000001100000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_33
+  float input_float = 1234567142834176.0f;
+  // seven significant digits: 1234567000000000
+  s21_decimal expected_result = {
+      {0x077C8600, 0x000462D5, 0x00000000, 0b00000000000000000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_34
+  float input_float = 12345.6708984375f;
+  // seven significant digits: 12345.67
+  s21_decimal expected_result = {
+      {0x0012D687, 0x00000000, 0x00000000, 0b00000000000000100000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_35
+  float input_float = 0.0f;
+  // seven significant digits: 0.0
+  s21_decimal expected_result = {
+      {0x00000000, 0x00000000, 0x00000000, 0b00000000000000000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_36
+  float input_float = 0.0000000001000000013351432f;
+  // seven significant digits: 0.0000000001000000
+  s21_decimal expected_result = {
+      {0x000F4240, 0x00000000, 0x00000000, 0b00000000000100000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_37
+  float input_float = 1.2345000505447388f;
+  // seven significant digits: 1.234500
+  s21_decimal expected_result = {
+      {12345, 0x00000000, 0x00000000, 4 << 16}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_38
+  float input_float = 7922816051279261000000000.0f;
+  // seven significant digits: 7922816000000000000000000
+  s21_decimal expected_result = {
+      {0xC2000000, 0xB749D1C8, 0x00068DB8, 0b00000000000000000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_39
+  float input_float = 3.0f;
+  // seven significant digits: 3.0
+  s21_decimal expected_result = {
+      {3, 0x00000000, 0x00000000, 0}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_40
+  float input_float =
+      0.0000000000000000000000000000000000000000010005271035279194f;
+
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_return_code, 1);
+
+
+#test gen_41
+  float input_float = 9999999198822400.0f;
+  // seven significant digits: 9999999000000000
+  s21_decimal expected_result = {
+      {0x34263600, 0x002386F2, 0x00000000, 0b00000000000000000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_42
+  float input_float = 99999.9921875f;
+  // seven significant digits: 99999.99
+  s21_decimal expected_result = {
+      {0x0098967F, 0x00000000, 0x00000000, 0b00000000000000100000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_43
+  float input_float = 12345.0f;
+  // seven significant digits: 12345.0
+  s21_decimal expected_result = {
+      {12345, 0x00000000, 0x00000000, 0b00000000000000000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+#test gen_44
+  float input_float = 7922816112394240.0f;
+  // seven significant digits: 7922816000000000
+  s21_decimal expected_result = {
+      {0x594D0000, 0x001C25C2, 0x00000000, 0b00000000000000000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_45
+  float input_float = 333.0f;
+  // seven significant digits: 333.0
+  s21_decimal expected_result = {
+      {333, 0x00000000, 0x00000000, 0}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_46
+  float input_float = 36523494920032480000000.0f;
+  // seven significant digits: 36523490000000000000000
+  s21_decimal expected_result = {
+      {0xABBD0000, 0xF13E8541, 0x000007BB, 0b00000000000000000000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_47
+  float input_float = 0.0000001234567861274627f;
+  // seven significant digits: 0.0000001234568
+  s21_decimal expected_result = {
+      {0x0012D688, 0x00000000, 0x00000000, 0b00000000000011010000000000000000}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+#test gen_48
+  float input_float = 100000.0f;
+  // seven significant digits: 100000.0
+  s21_decimal expected_result = {
+      {100000, 0x00000000, 0x00000000, 0}};
+  s21_decimal s21_result_decimal;
+  int s21_return_code =
+      s21_from_float_to_decimal(input_float, &s21_result_decimal);
+  ck_assert_int_eq(s21_is_equal(s21_result_decimal, expected_result), TRUE);
+  ck_assert_int_eq(s21_return_code, OK);
+
+
+  #test my1
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 1.0f;
+  s21_decimal expected = (s21_decimal){{1, 0, 0, 0}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my2
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 12.0f;
+  s21_decimal expected = (s21_decimal){{12, 0, 0, 0}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my3
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 123.0f;
+  s21_decimal expected = (s21_decimal){{123, 0, 0, 0}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my4
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 1234.0f;
+  s21_decimal expected = (s21_decimal){{1234, 0, 0, 0}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my5
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 12345.0f;
+  s21_decimal expected = (s21_decimal){{12345, 0, 0, 0}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my6
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 123456.0f;
+  s21_decimal expected = (s21_decimal){{123456, 0, 0, 0}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my7
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 1234567.0f;
+  s21_decimal expected = (s21_decimal){{1234567, 0, 0, 0}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my8
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 1.0e-10f;
+  s21_decimal expected = (s21_decimal){{1000000, 0, 0, 16 << 16}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my9
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 12.0e-10f;
+  s21_decimal expected = (s21_decimal){{1200000, 0, 0, 15 << 16}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+  
+  #test my10
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 123.0e-10f;
+  s21_decimal expected = (s21_decimal){{1230000, 0, 0, 14 << 16}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my11
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 1234.0e-10f;
+  s21_decimal expected = (s21_decimal){{1234000, 0, 0, 13 << 16}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my12
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 12345.0e-10f;
+  s21_decimal expected = (s21_decimal){{1234500, 0, 0, 12 << 16}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my13
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 123456.0e-10f;
+  s21_decimal expected = (s21_decimal){{1234560, 0, 0, 11 << 16}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my14
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 1234567.0e-10f;
+  s21_decimal expected = (s21_decimal){{1234567, 0, 0, 10 << 16}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my15
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 1.0e10f;
+  s21_decimal expected = (s21_decimal){{1410065408, 2, 0, 0}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my16
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 12.0e10f;
+  s21_decimal expected = (s21_decimal){{4035883008, 27, 0, 0}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my17
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 123.0e10f;
+  s21_decimal expected = (s21_decimal){{1639353344, 286, 0, 0}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my18
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 1234.0e10f;
+  s21_decimal expected = (s21_decimal){{558958592, 2873, 0, 0}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my19
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 12345.0e10f;
+  s21_decimal expected = (s21_decimal){{4049978368, 28742, 0, 0}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my20
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 123456.0e10f;
+  s21_decimal expected = (s21_decimal){{1715535872, 287443, 0, 0}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my21
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 12.0e-11f;
+  s21_decimal expected = (s21_decimal){{1200000, 0, 0, 16 << 16}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my22
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 123.456e+9f;
+  s21_decimal expected = (s21_decimal){{3196915712, 28, 0, 0}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my23
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 123456.0e+10f;
+  s21_decimal expected = (s21_decimal){{1715535872, 287443, 0, 0}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my24
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = -30.7339287;  // -30.73393
+  s21_decimal expected = (s21_decimal){{0x2EE571, 0x0, 0x0, 0x80050000}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my25
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 4.0f;  // seven significant digits: 4.0
+  s21_decimal expected = (s21_decimal){{4, 0x00000000, 0x00000000, 0}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my26
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 987654321.0e-21f;  // 0.00000000000098765429
+  s21_decimal expected = (s21_decimal){{9876543, 0, 0, 19 << 16}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my27
+  s21_decimal result = {{0, 0, 0, 0}}; //float  0.00000000000000000000000098765434637477254350786255
+  float number = 987654321.0e-33f;
+  s21_decimal expected = (s21_decimal){{9877, 0, 0, 28 << 16}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my28
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 987654321.0e-37f;  // convertation error
+  s21_decimal expected = (s21_decimal){{0, 0, 0, 0}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(code && s21_is_equal(expected, result));
+
+  #test my29
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = 1.0e27f;  // 999999988484154753734934528.0
+  s21_decimal expected = (s21_decimal){{3892314112, 2681241660, 54210108, 0}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+  #test my30
+  s21_decimal result = {{0, 0, 0, 0}};
+  float number = -12.0f; // -12.0
+  s21_decimal expected = (s21_decimal){{12, 0, 0, 1 << 31}};
+  int code = s21_from_float_to_decimal(number, &result);
+  ck_assert(!code && s21_is_equal(expected, result));
+
+
+
+    printf("TEST s21_from_float_to_decimal:\n");

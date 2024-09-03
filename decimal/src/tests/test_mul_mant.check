@@ -1,0 +1,58 @@
+#include "../s21_decimal.h"
+
+#test s21_mul_mant_1
+    s21_decimal d1 = {{2, 0, 0, 0}};
+    s21_decimal d2 = {{2, 0, 0, 0}};
+    int code = s21_mul_mant(&d1, &d2);
+    ck_assert(d1.bits[0] == 4);
+    ck_assert(code == OK);
+
+#test s21_mul_mant_2
+    s21_decimal d1 = {{0, 1, 0, 0}};
+    s21_decimal d2 = {{1, 0, 0, 0}};
+    int code = s21_mul_mant(&d1, &d2);
+    ck_assert(d1.bits[1] == 1);
+    ck_assert(code == OK);
+
+#test s21_mul_mant_3
+    s21_decimal d1 = {{UINT_MAX, UINT_MAX, UINT_MAX, 0}};
+    s21_decimal d2 = {{2, 0, 0, 0}};
+    int code = s21_mul_mant(&d1, &d2);
+    ck_assert(code == calculation_error);
+
+#test s21_mul_mant_4
+    s21_decimal d1 = {{0, 0, 0, 0}};
+    s21_decimal d2 = {{150, 0, 0, 0}};
+    int code = s21_mul_mant(&d1, &d2);
+    ck_assert(d1.bits[0] == 0);
+    ck_assert(code == OK);
+
+#test s21_mul_mant_5
+    s21_decimal d1 = {{1, 0, 0, 0}};
+    s21_decimal d2 = {{151, 0, 0, 0}};
+    int code = s21_mul_mant(&d1, &d2);
+    ck_assert(d1.bits[0] == 151);
+    ck_assert(code == OK);
+
+#test s21_mul_mant_6
+    s21_decimal d1 = {{1, 0, 0, 0}};
+    s21_decimal d2 = {{0, 0, 0, 0}};
+    int code = s21_mul_mant(&d1, &d2);
+    ck_assert(d1.bits[0] == 0);
+    ck_assert(code == OK);
+
+#test s21_mul_mant_7
+    s21_decimal d1 = {{1, 0, 0, 0}};
+    s21_decimal d2 = {{1, 0, 0, 0}};
+    int code = s21_mul_mant(&d1, &d2);
+    ck_assert(d1.bits[0] == 1);
+    ck_assert(code == OK);
+
+#test s21_mul_mant_8
+    s21_decimal d1 = {{3435973836, 3435973836, 3424, 0}};
+    s21_decimal d2 = {{3435973836, 0, 0, 0}};
+    int code = s21_mul_mant(&d1, &d2);
+    ck_assert(code == calculation_error);
+
+
+    printf("TEST s21_mul_mant:\n");

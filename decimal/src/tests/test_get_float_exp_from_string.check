@@ -1,0 +1,13 @@
+#include "../s21_decimal.h"
+
+#test s21_get_float_exp_from_string_1
+    char str[] = "1.234567E+01";
+    int exp = s21_get_float_exp_from_string(str);
+    ck_assert(exp == 1);
+
+#test s21_get_float_exp_from_string_2
+    char str[] = "1.234567E+22";
+    int exp = s21_get_float_exp_from_string(str);
+    ck_assert(exp == 22);
+
+    printf("TEST get_float_exp_from_string\n");

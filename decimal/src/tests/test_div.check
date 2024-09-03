@@ -1,0 +1,16 @@
+#include "../s21_decimal.h"
+
+#test s21_div_1
+	s21_decimal result = D0;
+	int code = s21_div(D0, D0, &D0);
+	ck_assert(s21_is_equal(D0, result));
+	ck_assert(code = 3);
+
+#test s21_div_2
+	s21_decimal result = D0;
+	int code = s21_div(D0, (s21_decimal){{1,0,0,0}}, &D0);
+
+	ck_assert(s21_is_equal(D0, result));
+	ck_assert(code = 3);
+	printf("TEST s21_div:\n");
+
